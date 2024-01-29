@@ -1,8 +1,9 @@
 package main
 
 import (
-	"bufio"
+	"context"
 	"github.com/MirableOne/word-of-wisdom/pkg/factory"
+	"github.com/MirableOne/word-of-wisdom/pkg/protocol"
 	"net"
 	"time"
 )
@@ -21,21 +22,25 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
-	reader := bufio.NewReader(conn)
+	ctx := context.Background()
 	for {
 		<-ticker.C
-		_, err = conn.Write([]byte("msg\n"))
+
+		err = protocol.Send(ctx, conn, &protocol.Message{
+			Type: protocol.QuoteRequest,
+			Body: "hello there;",
+		})
+
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 
-		message, err := reader.ReadString('\n')
+		message, err := protocol.Read(ctx, conn)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 
-		log.Info(message)
+		log.Info(message.Body)
 	}
 
 	conn.Close()
