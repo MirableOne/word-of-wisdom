@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/MirableOne/word-of-wisdom/pkg/config"
 	"github.com/MirableOne/word-of-wisdom/pkg/factory"
 	"github.com/MirableOne/word-of-wisdom/pkg/server"
 )
@@ -10,10 +11,10 @@ func main() {
 	handler := factory.MakeHandler()
 
 	serverConfig := &server.Config{
-		Host:   "0.0.0.0",
-		Port:   "3000",
 		Logger: log,
 	}
+
+	config.Must(config.Configure(serverConfig))
 
 	srv := server.NewServer(serverConfig)
 

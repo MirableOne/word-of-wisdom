@@ -2,15 +2,27 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/MirableOne/word-of-wisdom/pkg/config"
 	"github.com/MirableOne/word-of-wisdom/pkg/factory"
 	"github.com/MirableOne/word-of-wisdom/pkg/hashcash"
 	"github.com/MirableOne/word-of-wisdom/pkg/protocol"
 	"net"
 )
 
+type Config struct {
+	Host string `env:"HOST" validate:"required"`
+	Port string `env:"PORT" validate:"required"`
+}
+
 func main() {
 	log := factory.MakeLogger()
-	addr, err := net.ResolveTCPAddr("tcp", "0.0.0.0:3000")
+
+	cfg := &Config{}
+
+	config.Must(config.Configure(cfg))
+
+	addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%s", cfg.Host, cfg.Port))
 
 	if err != nil {
 		log.Fatal(err.Error())
